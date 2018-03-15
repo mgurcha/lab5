@@ -1,7 +1,51 @@
 <?php
- include 'functions.php';
- session_start();
+    session_start();
+    include 'functions.php';
+    
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = array();
+    }
+    
+    if (isset($_GET['query'])){
+        //get access to API function
+        include 'wmapi.php';
+        $items = getProducts($_GET['query']);
+    }
+    
+    if (isset($_POST['itemName'])) {
+        
+        //creating array to hold item properties
+        $newItem = array();
+        $newItem['name'] = $_POST['itemName'];
+        $newItem['id'] = $_POST['itemId'];
+        $newItem['price'] = $_POST['itemPrice'];
+        $newItem['image'] = $_POST['itemImage'];
+        
+        //check to see ither item with this id are in array
+        //if so update quanity of this item
+        foreach ($_SESSION['cart'] as &$item) {
+            if ($newItem['id'] == $item['id']) {
+                $item['quantity'] += 1;
+                $found = true;
+            }
+    }
+       
+       //else add to array
+    if ($found != true) {
+        $newItem['quantity'] = 1;
+        array_push($_SESSION['cart'], $newItem);
+    } 
+        //stroe items in cart array
+        // array_push($_SESSION['cart'], $newItem);
+    }
+    
+    
+    
+    
+    
+    
 ?>
+        
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,9 +70,9 @@
                     <ul class='nav navbar-nav'>
                         <li><a href='index.php'>Home</a></li>
                         <li><a href='scart.php'>
-                        <span class= 'glyphicon glyphicon-shopping-cart' aria-hidden= 'true'>
-                        </span>Cart: <?php displayCartCount();?></a></li>
-                    </ul>
+                            <span class='glyphicon glyphicon-shopping-cart' aria-hidden='true'>
+                            </span> Cart: <?php displayCartCount(); ?> </a></li>
+                        </ul>
                 </div>
             </nav>
             <br /> <br /> <br />
@@ -44,51 +88,9 @@
             </form>
             
             <!-- Display Search Results -->
-            <br/> <br/> <br/>
-            <?php
-                //include 'functions.php';
-                //session_start();
-                if(!isset($_SESSION['cart'])){
-                    $_SESSION['cart'] = array();
-                }
-                if(isset($_POST['itemName'])){
-                    $newItem = array();
-                    $newItem['name'] = $_POST['itemName'];
-                    $newItem['id'] = $_POST['itemId'];
-                    $newItem['price'] =$_POST['itemPrice'];
-                    $newItem['image'] =$_POST['itemImage'];
-                    
-                    //print_r($newItem);
-                    foreach ($_SESSION['cart'] as &$item) {
-                    
-                        if( $newItem['id'] == $item['id']){
-                            $item['quantity'] +=1;
-                            $found = true;
-                        }
-                    }
-                    
-                    //storing the item array in the cart array
-                    
-                    if($found != true){
-                        $newItem['quantity'] = 1;
-                        array_push($_SESSION['cart'],$newItem);
-                    }
-                    
-                }
-                
-                if(isset($_GET['query'])){
-                    include 'wmapi.php';
-                    $items = getProducts($_GET['query']);
-                    
-                }
-            
-                    
-            ?>
-            
-            <?php
-                displayResults();
-            ?>
-            
+            <?php displayResults(); ?>
+            <br /><br />
+        
         </div>
     </div>
     </body>
