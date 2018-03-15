@@ -60,9 +60,6 @@
                       displayCart();
                       
                   }
-                  else{
-                      echo "No Items to view";
-                  }
                       
                 ?>
                 
